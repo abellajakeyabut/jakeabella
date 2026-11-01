@@ -1,5 +1,25 @@
 // All site content lives here — edit this file to update the website.
 
+import { formatDuration, formatPeriod, yearsSince } from '@/lib/career';
+
+export const siteUrl = 'https://jakeyabutabella.com';
+
+// Start dates ('YYYY-MM') behind the "N years" figures. Write {yearsInIT}, {yearsInBanking}
+// or {yearsAtUOB} in any text below and the current number is filled in when the page renders.
+export const milestones = {
+  inIT: '2005-01', // TODO: set the real month; chosen so the site keeps saying 21 years
+  inBanking: '2009-06', // MUFG
+  atUOB: '2015-06',
+};
+
+export function getFacts(now: Date) {
+  return {
+    yearsInIT: yearsSince(milestones.inIT, now),
+    yearsInBanking: yearsSince(milestones.inBanking, now),
+    yearsAtUOB: yearsSince(milestones.atUOB, now),
+  };
+}
+
 export const profile = {
   name: 'Jake Abella',
   shortName: 'JAKE',
@@ -10,18 +30,18 @@ export const profile = {
   linkedin: 'https://www.linkedin.com/in/jake-abella-903b47137',
   taglines: [
     'Building e-trading systems for Global Markets.',
-    '21 years shipping software. Still loves to code.',
+    '{yearsInIT} years shipping software. Still loves to code.',
     'Bridging business, delivery and engineering.',
   ],
   summary: [
-    "I'm a technologist with 21 years in the IT industry, focused on building and delivering software in Java and .NET. More than 15 of those years have been in banking, mostly on electronic trading systems.",
+    "I'm a technologist with {yearsInIT} years in the IT industry, focused on building and delivering software in Java and .NET. {yearsInBanking} of those years have been in banking, mostly on electronic trading systems.",
     "Today I'm the Technical/Functional Lead and Delivery Manager for Global Markets trading systems at UOB. I work with development, infrastructure and support teams, and with business users, to get things built and shipped, often under real pressure.",
     "Outside work, I'm a tech enthusiast who is passionate about coding and cybersecurity.",
   ],
   stats: [
-    { value: '21', label: 'Years in IT' },
-    { value: '15+', label: 'Years in Banking' },
-    { value: '11', label: 'Years at UOB' },
+    { value: '{yearsInIT}', label: 'Years in IT' },
+    { value: '{yearsInBanking}', label: 'Years in Banking' },
+    { value: '{yearsAtUOB}', label: 'Years at UOB' },
     { value: '3', label: 'Asset Classes' },
   ],
   abilities: [
@@ -42,7 +62,6 @@ export const profile = {
   ],
   inventory: [
     { name: 'Java', tag: 'LANG' },
-    { name: '.NET', tag: 'LANG' },
     { name: 'JavaScript', tag: 'LANG' },
     { name: 'React', tag: 'UI' },
     { name: 'Angular', tag: 'UI' },
@@ -68,13 +87,28 @@ export type Stage = {
   world: string;
   org: string;
   role: string;
-  period: string;
-  duration: string;
   location?: string;
   notes: string[];
   current?: boolean;
   color: 'coral' | 'sky' | 'mint' | 'sun' | 'grape' | 'leaf';
-};
+} &
+  // Dated stages get their period and duration computed; leave out `end` for the current role.
+  (| { start: string; end?: string }
+    // Or give fixed labels instead.
+    | { period: string; duration: string }
+  );
+
+export function stagePeriod(stage: Stage) {
+  return 'period' in stage
+    ? stage.period
+    : formatPeriod(stage.start, stage.end);
+}
+
+export function stageDuration(stage: Stage, now: Date) {
+  return 'duration' in stage
+    ? stage.duration
+    : formatDuration(stage.start, stage.end, now);
+}
 
 // Ordered from start of the journey to the present.
 export const journey: Stage[] = [
@@ -94,8 +128,8 @@ export const journey: Stage[] = [
     world: '1-1',
     org: 'Panasonic Singapore',
     role: 'Software Engineer',
-    period: 'Jul 2008 – Jul 2009',
-    duration: '1 yr 1 mo',
+    start: '2008-07',
+    end: '2009-07',
     location: 'Singapore',
     notes: [
       'Started my career in Singapore as a software engineer. Building inventory systems and cost management tools',
@@ -106,8 +140,8 @@ export const journey: Stage[] = [
     world: '2-1',
     org: 'MUFG',
     role: 'Software Engineer',
-    period: 'Jun 2009 – Aug 2014',
-    duration: '5 yrs 3 mos',
+    start: '2009-07',
+    end: '2014-08',
     notes: [
       'Five years of software engineering in banking, Migrated legacy applications to .Net apps using WCF, C# and MVC',
     ],
@@ -117,8 +151,8 @@ export const journey: Stage[] = [
     world: '3-1',
     org: 'Tangspac Consulting',
     role: 'Business Analyst',
-    period: 'Aug 2014 – Jun 2015',
-    duration: '11 mos',
+    start: '2014-08',
+    end: '2015-06',
     location: 'Singapore',
     notes: [
       'Client: United Overseas Bank (UOB).',
@@ -131,8 +165,8 @@ export const journey: Stage[] = [
     world: '4-1',
     org: 'UOB',
     role: 'Assistant Vice President',
-    period: 'Jun 2015 – Apr 2022',
-    duration: '6 yrs 11 mos',
+    start: '2015-06',
+    end: '2022-04',
     location: 'Singapore',
     notes: [
       'EDistribution Platform Team Lead / Developer.',
@@ -144,8 +178,7 @@ export const journey: Stage[] = [
     world: '4-2',
     org: 'UOB',
     role: 'Vice President',
-    period: 'Mar 2022 – Present',
-    duration: '4 yrs 8 mos',
+    start: '2022-03',
     location: 'Singapore',
     notes: [
       'Technical/Functional Lead, E-Trading Development Team.',

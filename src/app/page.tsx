@@ -1,11 +1,31 @@
-import Nav from "@/components/Nav";
-import PixelArt from "@/components/PixelArt";
-import Typewriter from "@/components/Typewriter";
-import Reveal from "@/components/Reveal";
-import CoinField from "@/components/CoinField";
-import { profile, journey, achievements, projects } from "@/data/profile";
+import Nav from '@/components/Nav';
+import PixelArt from '@/components/PixelArt';
+import Typewriter from '@/components/Typewriter';
+import Reveal from '@/components/Reveal';
+import CoinField from '@/components/CoinField';
+import {
+  profile,
+  journey,
+  achievements,
+  projects,
+  getFacts,
+  stagePeriod,
+  stageDuration,
+} from '@/data/profile';
+import { fill } from '@/lib/career';
 
-function SectionHead({ stage, title, kicker }: { stage: string; title: string; kicker: string }) {
+// Durations, year counts and the footer year are computed at render time, so regenerate daily.
+export const revalidate = 86400;
+
+function SectionHead({
+  stage,
+  title,
+  kicker,
+}: {
+  stage: string;
+  title: string;
+  kicker: string;
+}) {
   return (
     <Reveal className="section-head">
       <span className="section-head__stage">STAGE {stage}</span>
@@ -16,7 +36,9 @@ function SectionHead({ stage, title, kicker }: { stage: string; title: string; k
 }
 
 export default function Home() {
-  const year = new Date().getFullYear();
+  const now = new Date();
+  const year = now.getFullYear();
+  const facts = getFacts(now);
 
   return (
     <>
@@ -45,7 +67,9 @@ export default function Home() {
               </h1>
               <p className="hero__role">{profile.title}</p>
               <p className="hero__type">
-                <Typewriter lines={profile.taglines} />
+                <Typewriter
+                  lines={profile.taglines.map((t) => fill(t, facts))}
+                />
               </p>
               <div className="hero__cta">
                 <a href="#about" className="btn btn--primary">
@@ -61,7 +85,7 @@ export default function Home() {
               <div className="bubble">
                 Hi! I&apos;m Jake.
                 <br />
-                Welcome to my world.
+                Welcome to my Portfolio Page.
               </div>
               <PixelArt name="tree" scale={9} className="hero__tree" />
               <PixelArt name="hero" scale={11} className="hero__sprite" />
@@ -74,12 +98,20 @@ export default function Home() {
         {/* ───────── ABOUT ───────── */}
         <section id="about" className="section">
           <div className="container">
-            <SectionHead stage="01" title="About Me" kicker="Character select: a quick look at who I am." />
+            <SectionHead
+              stage="01"
+              title="About Me"
+              kicker="Character select: a quick look at who I am."
+            />
 
             <div className="about">
               <Reveal className="player-card px-box">
                 <div className="player-card__portrait">
-                  <PixelArt name="hero" scale={7} title="Pixel portrait of Jake" />
+                  <PixelArt
+                    name="hero"
+                    scale={7}
+                    title="Pixel portrait of Jake"
+                  />
                 </div>
                 <h3>{profile.name}</h3>
                 <dl className="player-card__attrs">
@@ -113,7 +145,7 @@ export default function Home() {
               <Reveal delay={120} className="dialog px-box">
                 <span className="dialog__name">JAKE</span>
                 {profile.summary.map((p, i) => (
-                  <p key={i}>{p}</p>
+                  <p key={i}>{fill(p, facts)}</p>
                 ))}
                 <span className="dialog__next blink" aria-hidden>
                   ▼
@@ -124,7 +156,7 @@ export default function Home() {
             <div className="stats">
               {profile.stats.map((s, i) => (
                 <Reveal key={s.label} delay={i * 90} className="stat px-box">
-                  <strong>{s.value}</strong>
+                  <strong>{fill(s.value, facts)}</strong>
                   <span>{s.label}</span>
                 </Reveal>
               ))}
@@ -143,19 +175,24 @@ export default function Home() {
 
             <ol className="journey">
               {journey.map((stage, i) => (
-                <li key={stage.world} className={`level level--${stage.color} ${i % 2 ? "level--right" : ""}`}>
+                <li
+                  key={stage.world}
+                  className={`level level--${stage.color} ${i % 2 ? 'level--right' : ''}`}
+                >
                   <div className="level__node" aria-hidden>
                     <span>{stage.world}</span>
                   </div>
                   <Reveal className="level__card px-box">
                     <div className="level__meta">
                       <span className="level__world">WORLD {stage.world}</span>
-                      <span className="level__period">{stage.period}</span>
+                      <span className="level__period">
+                        {stagePeriod(stage)}
+                      </span>
                     </div>
                     <h3>{stage.role}</h3>
                     <p className="level__org">
                       {stage.org}
-                      {stage.location ? ` · ${stage.location}` : ""}
+                      {stage.location ? ` · ${stage.location}` : ''}
                     </p>
                     <ul>
                       {stage.notes.map((n) => (
@@ -163,8 +200,14 @@ export default function Home() {
                       ))}
                     </ul>
                     <div className="level__foot">
-                      <span className="chip">⏱ {stage.duration}</span>
-                      {stage.current && <span className="chip chip--live blink-soft">★ Current level</span>}
+                      <span className="chip">
+                        ⏱ {stageDuration(stage, now)}
+                      </span>
+                      {stage.current && (
+                        <span className="chip chip--live blink-soft">
+                          ★ Current level
+                        </span>
+                      )}
                     </div>
                   </Reveal>
                 </li>
@@ -181,7 +224,11 @@ export default function Home() {
         {/* ───────── SKILLS ───────── */}
         <section id="skills" className="section">
           <div className="container">
-            <SectionHead stage="03" title="Skills & Inventory" kicker="Abilities unlocked over two decades of building." />
+            <SectionHead
+              stage="03"
+              title="Skills & Inventory"
+              kicker="Abilities unlocked over two decades of building."
+            />
 
             <div className="skills">
               <Reveal className="px-box abilities">
@@ -219,7 +266,11 @@ export default function Home() {
             <h3 className="subhead">Achievements Unlocked</h3>
             <div className="achievements">
               {achievements.map((a, i) => (
-                <Reveal key={a.title} delay={i * 100} className="achievement px-box">
+                <Reveal
+                  key={a.title}
+                  delay={i * 100}
+                  className="achievement px-box"
+                >
                   <PixelArt name={a.sprite} scale={5} />
                   <div>
                     <span className="achievement__label">ACHIEVEMENT</span>
@@ -235,18 +286,32 @@ export default function Home() {
         {/* ───────── PORTFOLIO ───────── */}
         <section id="portfolio" className="section section--alt">
           <div className="container">
-            <SectionHead stage="04" title="Portfolio" kicker="New game cartridges are on the way. Check back soon." />
+            <SectionHead
+              stage="04"
+              title="Portfolio"
+              kicker="New game cartridges are on the way. Check back soon."
+            />
 
             <div className="carts">
               {projects.map((p, i) => {
                 const inner = (
                   <>
                     <div className="cart__label">
-                      {p.locked ? <PixelArt name="lock" scale={6} /> : <PixelArt name="star" scale={6} />}
-                      <span className="cart__no">No. {String(i + 1).padStart(2, "0")}</span>
+                      {p.locked ? (
+                        <PixelArt name="lock" scale={6} />
+                      ) : (
+                        <PixelArt name="star" scale={6} />
+                      )}
+                      <span className="cart__no">
+                        No. {String(i + 1).padStart(2, '0')}
+                      </span>
                     </div>
-                    <h3>{p.locked ? "Locked" : p.title}</h3>
-                    <p>{p.locked ? "This level hasn't been released yet." : p.blurb}</p>
+                    <h3>{p.locked ? 'Locked' : p.title}</h3>
+                    <p>
+                      {p.locked
+                        ? "This level hasn't been released yet."
+                        : p.blurb}
+                    </p>
                     <div className="cart__tags">
                       {p.tags.map((t) => (
                         <span key={t} className="chip">
@@ -259,9 +324,16 @@ export default function Home() {
                 return (
                   <Reveal key={p.title} delay={i * 100}>
                     {p.locked || !p.url ? (
-                      <div className={`cart ${p.locked ? "cart--locked" : ""}`}>{inner}</div>
+                      <div className={`cart ${p.locked ? 'cart--locked' : ''}`}>
+                        {inner}
+                      </div>
                     ) : (
-                      <a className="cart" href={p.url} target="_blank" rel="noreferrer">
+                      <a
+                        className="cart"
+                        href={p.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
                         {inner}
                       </a>
                     )}
@@ -275,17 +347,27 @@ export default function Home() {
         {/* ───────── CONTACT ───────── */}
         <section id="contact" className="section contact">
           <div className="container">
-            <SectionHead stage="05" title="Contact" kicker="Player 2, ready to join?" />
+            <SectionHead
+              stage="05"
+              title="Contact"
+              kicker="Player 2, ready to join?"
+            />
 
             <Reveal className="contact__box px-box">
               <PixelArt name="heart" scale={12} className="contact__mail" />
               <div>
                 <p className="contact__lead">
-                  I&apos;m always happy to talk about e-trading, software delivery, architecture, or anything
-                  related to code and cybersecurity.
+                  I&apos;m always happy to talk about e-trading, software
+                  delivery, architecture, or anything related to code and
+                  cybersecurity.
                 </p>
                 <div className="contact__actions">
-                  <a className="btn btn--blue" href={profile.linkedin} target="_blank" rel="noreferrer">
+                  <a
+                    className="btn btn--blue"
+                    href={profile.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     in · Connect on LinkedIn
                   </a>
                 </div>
@@ -298,7 +380,9 @@ export default function Home() {
       <footer className="footer">
         <div className="ground ground--footer" aria-hidden />
         <div className="footer__inner container">
-          <span>© {year} {profile.name}</span>
+          <span>
+            © {year} {profile.name}
+          </span>
           <span className="footer__save">
             <PixelArt name="heart" scale={2} /> Thanks for playing
           </span>
