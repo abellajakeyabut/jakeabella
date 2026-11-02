@@ -19,9 +19,33 @@ export const palette: Record<string, string> = {
   L: "#6f4723", // wood shade
   v: "#9b7bff", // violet
   t: "#b8f2d0", // mint
+  M: "#f4ecc2", // moon
+  N: "#cfc48e", // moon shade
 };
 
 export const sprites = {
+  sun: [
+    "....y....",
+    ".y.....y.",
+    "...yyy...",
+    "..yyyyy..",
+    "y.yyyyY.y",
+    "..yyyYY..",
+    "...YYY...",
+    ".y.....y.",
+    "....y....",
+  ],
+  moon: [
+    "..MMMM...",
+    ".MMMM....",
+    "MMMN.....",
+    "MMMN.....",
+    "MMMN.....",
+    "MMMMN....",
+    "MMMMMN..M",
+    ".MMMMMMM.",
+    "..MMMMM..",
+  ],
   hero: [
     ".....kkkkkk.....",
     "....khhhhhhk....",

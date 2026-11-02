@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PixelArt from "./PixelArt";
+import ThemeToggle from "./ThemeToggle";
 
 const links = [
   { id: "about", label: "About" },
@@ -48,15 +49,6 @@ export default function Nav() {
           <span>JAKE.ABELLA</span>
         </a>
 
-        <button
-          className="nav__toggle"
-          aria-expanded={open}
-          aria-controls="nav-menu"
-          onClick={() => setOpen((o) => !o)}
-        >
-          {open ? "CLOSE" : "MENU"}
-        </button>
-
         <nav id="nav-menu" className={`nav__links ${open ? "nav__links--open" : ""}`}>
           {links.map(({ id, label }) => (
             <a
@@ -70,6 +62,18 @@ export default function Nav() {
             </a>
           ))}
         </nav>
+
+        <div className="nav__actions">
+          <ThemeToggle />
+          <button
+            className="nav__toggle"
+            aria-expanded={open}
+            aria-controls="nav-menu"
+            onClick={() => setOpen((o) => !o)}
+          >
+            {open ? "CLOSE" : "MENU"}
+          </button>
+        </div>
       </div>
     </header>
   );

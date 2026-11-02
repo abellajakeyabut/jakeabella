@@ -11,6 +11,22 @@
   --ink-soft: #4a4660;
   --muted: #7a7590;
   --shadow: rgba(29, 27, 46, 0.18);
+  /* Text on bright fills (sun, mint, coral…): stays dark in both themes */
+  --on-bright: #1d1b2e;
+  --grid: rgba(29, 27, 46, 0.035);
+  --nav-bg: rgba(255, 248, 231, 0.94);
+  --hud-bg: rgba(255, 255, 255, 0.85);
+  --dots: rgba(29, 27, 46, 0.2);
+  --cart: #d6d0e6;
+  --cart-stripe-1: #f1eef8;
+  --cart-stripe-2: #e6e1f2;
+  --slot-hi: rgba(255, 255, 255, 0.9);
+  --sky-1: #8fd3ff;
+  --sky-2: #a3dcff;
+  --sky-3: #b9e6ff;
+  --sky-4: #cfefff;
+  --sky-5: #e4f6ff;
+  color-scheme: light;
 
   --coral: #ff6b6b;
   --sun: #ffd23f;
@@ -33,6 +49,32 @@
   --font-mono: "Space Mono", monospace;
 }
 
+/* Dark theme ("night level"). Set by the inline script in layout.tsx and the nav toggle. */
+:root[data-theme="dark"] {
+  --cream: #15132a;
+  --cream-2: #2a2645;
+  --paper: #211e38;
+  --sky-pale: #1b1932;
+  --ink: #f3ecd8;
+  --ink-soft: #cfc9e0;
+  --muted: #a9a3c0;
+  --shadow: rgba(0, 0, 0, 0.55);
+  --grid: rgba(243, 236, 216, 0.03);
+  --nav-bg: rgba(21, 19, 42, 0.94);
+  --hud-bg: rgba(33, 30, 56, 0.9);
+  --dots: rgba(243, 236, 216, 0.2);
+  --cart: #2f2b4b;
+  --cart-stripe-1: #26223f;
+  --cart-stripe-2: #1e1b34;
+  --slot-hi: rgba(255, 255, 255, 0.06);
+  --sky-1: #0f0e2a;
+  --sky-2: #161540;
+  --sky-3: #1e1d52;
+  --sky-4: #272662;
+  --sky-5: #302f6e;
+  color-scheme: dark;
+}
+
 *,
 *::before,
 *::after {
@@ -48,8 +90,8 @@ html {
 body {
   margin: 0;
   background-color: var(--cream);
-  background-image: linear-gradient(rgba(29, 27, 46, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(29, 27, 46, 0.035) 1px, transparent 1px);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: 24px 24px;
   color: var(--ink);
   font-family: var(--font-body), system-ui, sans-serif;
@@ -86,7 +128,7 @@ p {
 
 ::selection {
   background: var(--sun);
-  color: var(--ink);
+  color: var(--on-bright);
 }
 
 :focus-visible {
@@ -196,6 +238,7 @@ p {
 
 .chip--live {
   background: var(--sun);
+  color: var(--on-bright);
 }
 
 /* ---------- Animations ---------- */
@@ -263,7 +306,7 @@ p {
 }
 
 .nav--scrolled {
-  background: rgba(255, 248, 231, 0.94);
+  background: var(--nav-bg);
   backdrop-filter: blur(6px);
   box-shadow: 0 4px 0 0 var(--ink);
 }
@@ -290,6 +333,7 @@ p {
 .nav__links {
   display: flex;
   gap: 4px;
+  margin-left: auto;
 }
 
 .nav__links a {
@@ -306,7 +350,7 @@ p {
 
 .nav__links a:hover,
 .nav__links a.is-active {
-  color: var(--ink);
+  color: var(--on-bright);
   background: var(--sun);
 }
 
@@ -317,6 +361,43 @@ p {
   top: 50%;
   transform: translateY(-50%);
   animation: blink 0.8s steps(1) infinite;
+}
+
+.nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 40px;
+  padding: 0;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--shadow);
+  cursor: pointer;
+  transition: transform 80ms steps(2);
+}
+
+.theme-toggle:hover {
+  transform: translate(-2px, -2px);
+}
+
+.theme-toggle:active {
+  transform: translate(2px, 2px);
+}
+
+/* Show the icon for the theme you'd switch to */
+.theme-toggle__sun,
+:root[data-theme="dark"] .theme-toggle__moon {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-toggle__sun {
+  display: block;
 }
 
 .nav__toggle {
@@ -343,12 +424,22 @@ p {
   overflow: hidden;
   background: linear-gradient(
     to bottom,
-    #8fd3ff 0 22%,
-    #a3dcff 22% 42%,
-    #b9e6ff 42% 60%,
-    #cfefff 60% 76%,
-    #e4f6ff 76%
+    var(--sky-1) 0 22%,
+    var(--sky-2) 22% 42%,
+    var(--sky-3) 42% 60%,
+    var(--sky-4) 60% 76%,
+    var(--sky-5) 76%
   );
+}
+
+/* Night: dim the clouds and turn the sun into a moon */
+:root[data-theme="dark"] .cloud {
+  opacity: 0.35;
+}
+
+:root[data-theme="dark"] .sun {
+  background: #f4ecc2;
+  box-shadow: inset -12px -12px 0 #cfc48e;
 }
 
 .sky {
@@ -542,7 +633,7 @@ p {
   padding: 8px 12px;
   font-family: var(--font-display), monospace;
   font-size: 0.6rem;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--hud-bg);
   border: 3px solid var(--ink);
 }
 
@@ -570,8 +661,8 @@ p {
   z-index: 3;
   font-family: var(--font-display), monospace;
   font-size: 0.7rem;
-  color: var(--paper);
-  text-shadow: 2px 2px 0 var(--ink);
+  color: #fff;
+  text-shadow: 2px 2px 0 var(--on-bright);
   pointer-events: none;
   animation: pop 0.8s steps(6) forwards;
 }
@@ -669,7 +760,7 @@ p {
   justify-content: space-between;
   gap: 12px;
   padding: 8px 0;
-  border-bottom: 3px dotted rgba(29, 27, 46, 0.2);
+  border-bottom: 3px dotted var(--dots);
 }
 
 .player-card__attrs dt {
@@ -719,7 +810,7 @@ p {
   padding: 8px 14px;
   font-family: var(--font-display), monospace;
   font-size: 0.65rem;
-  color: var(--paper);
+  color: #fff;
   background: var(--coral);
   border: 4px solid var(--ink);
 }
@@ -838,6 +929,7 @@ p {
   height: 64px;
   font-family: var(--font-display), monospace;
   font-size: 0.62rem;
+  color: var(--on-bright);
   background: var(--c);
   box-shadow:
     0 -4px 0 0 var(--ink),
@@ -982,13 +1074,18 @@ p {
   padding: 26px 10px 10px;
   background: var(--cream);
   border: 4px solid var(--ink);
-  box-shadow: inset -4px -4px 0 rgba(0, 0, 0, 0.08), inset 4px 4px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: inset -4px -4px 0 rgba(0, 0, 0, 0.08), inset 4px 4px 0 var(--slot-hi);
   transition: transform 0.12s steps(2), background 0.12s steps(2);
 }
 
 .slot:hover {
   transform: translateY(-4px);
+  color: var(--on-bright);
   background: var(--sun);
+}
+
+.slot:hover .slot__tag {
+  color: var(--on-bright);
 }
 
 .slot__tag {
@@ -1058,7 +1155,7 @@ p {
   height: 100%;
   padding: 22px 22px 26px;
   text-decoration: none;
-  background: #d6d0e6;
+  background: var(--cart);
   border: 4px solid var(--ink);
   box-shadow: 8px 8px 0 var(--shadow), inset -6px -6px 0 rgba(0, 0, 0, 0.1);
   clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 0 100%);
@@ -1083,7 +1180,7 @@ a.cart:hover {
 }
 
 .cart--locked .cart__label {
-  background: repeating-linear-gradient(-45deg, #f1eef8 0 12px, #e6e1f2 12px 24px);
+  background: repeating-linear-gradient(-45deg, var(--cart-stripe-1) 0 12px, var(--cart-stripe-2) 12px 24px);
 }
 
 .cart__no {
@@ -1161,7 +1258,7 @@ a.cart:hover {
   padding-bottom: 28px;
   font-family: var(--font-mono), monospace;
   font-size: 0.85rem;
-  color: var(--cream);
+  color: #fff8e7; /* fixed: sits on dirt in both themes */
 }
 
 .footer {
